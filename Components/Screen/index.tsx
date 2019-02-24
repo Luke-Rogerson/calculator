@@ -4,12 +4,14 @@ import { StyleSheet, Text, View } from 'react-native';
 interface Props {
   deviceWidth: number;
   deviceHeight: number;
+  currentValue: number;
+  changeCurrentValue: () => number;
 }
 
 export const Screen = (props: Props) => {
   return (
     <View>
-      <Text>Value: 0</Text>
+      <Text>Value: {props.currentValue}</Text>
     </View>
   );
 };
