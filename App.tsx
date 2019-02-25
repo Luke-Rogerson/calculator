@@ -1,44 +1,87 @@
 import React, { Component } from 'react';
-import {
-  Button,
-  Dimensions,
-  Platform,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
-import Keypad from './Components/Keypad';
+import { Dimensions, StyleSheet, Text, View } from 'react-native';
+import Keys from './Components/Keys';
 import Screen from './Components/Screen';
 
 const deviceWidth = Dimensions.get('window').width;
 const deviceHeight = Dimensions.get('window').height;
 
 interface IProps {
-  props?: object;
+  inputANumber(val: number): void;
 }
 interface IState {
-  currentValue: number;
+  storedValue: number;
+  displayValue: number;
+  operator?: string;
 }
-
 export default class App extends Component<IProps, IState> {
   public state = {
-    currentValue: 0,
+    storedValue: 0,
+    displayValue: 0,
+    operator: '',
   };
 
-  public handleCurrentValueChange = (val: number) => {
-    return this.setState({ currentValue: val });
+  private updateDisplayValue = async (val: number) => {
+    if (!this.state.storedValue) this.setState({ storedValue: val });
+    await this.setState({ displayValue: val });
+  };
+
+  private selectOperator = async (operator: string) => {
+    await this.setState({ operator });
+  };
+
+  private updateStoredValue = async () => {
+    if (!this.state.operator) return;
+
+    const { operator } = this.state;
+
+    switch (operator) {
+      case 'add':
+        await this.setState({
+          storedValue: this.state.storedValue + this.state.displayValue,
+        });
+        break;
+
+      case 'subtract':
+        await this.setState({
+          storedValue: this.state.storedValue - this.state.displayValue,
+        });
+        break;
+
+      case 'divide':
+        await this.setState({
+          storedValue: this.state.storedValue / this.state.displayValue,
+        });
+        break;
+
+      case 'multiply':
+        await this.setState({
+          storedValue: this.state.storedValue * this.state.displayValue,
+        });
+        break;
+    }
+    await this.setState({ displayValue: this.state.storedValue });
+  };
+
+  private clear = () => {
+    this.setState({ storedValue: 0, displayValue: 0, operator: '' });
   };
 
   public render() {
     return (
       <View style={styles.container}>
+        <Text>Operator: {this.state.operator}</Text>
         <Screen
           deviceWidth={deviceWidth}
           deviceHeight={deviceHeight}
-          currentValue={this.state.currentValue}
-          changeCurrentValue={this.handleCurrentValueChange}
+          displayValue={this.state.displayValue}
         />
-        <Keypad />
+        <Keys
+          updateDisplayValue={this.updateDisplayValue}
+          selectOperator={this.selectOperator}
+          updateStoredValue={this.updateStoredValue}
+          clear={this.clear}
+        />
       </View>
     );
   }

@@ -1,20 +1,38 @@
-import React from 'react';
+import React, { Component } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-interface Props {
+interface IProps {
   deviceWidth: number;
   deviceHeight: number;
-  currentValue: number;
-  changeCurrentValue: () => number;
+  displayValue: number;
 }
 
-export const Screen = (props: Props) => {
-  return (
-    <View>
-      <Text>Value: {props.currentValue}</Text>
-    </View>
-  );
-};
+interface IState {
+  displayValue: number;
+}
+
+export class Screen extends Component<IProps, IState> {
+  state = {
+    displayValue: 0,
+  };
+
+  static getDerivedStateFromProps(props: IProps, state: IState) {
+    if (props.displayValue !== state.displayValue) {
+      return {
+        displayValue: props.displayValue,
+      };
+    }
+    return null;
+  }
+
+  render() {
+    return (
+      <View>
+        <Text>Value: {this.state.displayValue}</Text>
+      </View>
+    );
+  }
+}
 
 export default Screen;
 
